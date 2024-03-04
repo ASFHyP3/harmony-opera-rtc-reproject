@@ -1,9 +1,9 @@
 """
 ==================
-example_service.py
+opera-rtc-reporject.py
 ==================
 
-An example service adapter implementation and example CLI parser
+An example service adapter implementation that reprojects a given list of Opera RTC granules into EPSG:4326 (or another desired SRS).
 """
 
 import argparse
@@ -23,8 +23,6 @@ class ExampleAdapter(harmony.BaseHarmonyAdapter):
     Shows an example of what a service adapter implementation looks like
     """
     def process_item(self, granules: list, output_srs: str):
-
-        workdir = mkdtemp()
         session = asf_search.ASFSession()
         results = asf_search.granule_search(granules)
 
@@ -32,12 +30,13 @@ class ExampleAdapter(harmony.BaseHarmonyAdapter):
 
         for index in len(results):
             try:
-                print(f'Processing granule {granule}')
+                print(f'Processing granule {granules[index]}')
+
+                workdir = mkdtemp()
 
                 # Download the relevant files for the product.
-                granule = granules[index]
-                results[index].download(path='.', session=session, fileType=asf_search.download_file_type.FileDownloadType.ADDITIONAL_FILES)
-                input_files = [granule + '_VV.tif', granule + '_VH.tif', granule + '_mask.tif']
+                results[index].download(path=workdir, session=session, fileType=asf_search.download_file_type.FileDownloadType.ADDITIONAL_FILES)
+                input_files = filter(lambda f: f.endswith('.tif'), os.listdir(workdir))
                 output_files = list(map(lambda f: str(Path(workdir) / (f.split('.tif')[0] + '_reprojected.tif')), input_files))
 
                 # Do the reprojection for each file.
