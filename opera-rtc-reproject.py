@@ -113,6 +113,22 @@ def main():
 
     args = parser.parse_args()
 
+    # for test purpose, capture the message and sources passed by harmony front service
+
+    message = args.harmony_input
+    mfile = open("message.json","w")
+    mfile.write(message)
+    mfile.write('\n')
+    mfile.close()
+
+
+    sources = args.harmony_sources
+    sfile = open("sources","w")
+    sfile.write(sources)
+    sfile.write('\n')
+    sfile.close()
+
+
     if (harmony.is_harmony_cli(args)):
         harmony.run_cli(parser, args, ExampleAdapter)
     else:
