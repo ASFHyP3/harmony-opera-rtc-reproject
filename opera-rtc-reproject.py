@@ -4,6 +4,8 @@ import harmony
 import pystac
 from harmony.util import stage
 
+import logging
+
 class ExampleAdapter(harmony.BaseHarmonyAdapter):
 
     def process_item(self, item: pystac.Item, source) -> pystac.Item:
@@ -24,6 +26,8 @@ class ExampleAdapter(harmony.BaseHarmonyAdapter):
         """
         result = item.clone()
         result.assets = {}
+
+        # self.logger.info(f'Processing item {item.id}')
 
         filename = 'cat.jpg'
         mimetype = 'image/jpeg'
@@ -67,6 +71,8 @@ def main():
 
     args = parser.parse_args()
 
+    # log the args parameters
+
     # for test purpose, capture the message and sources passed by harmony front service
 
     message = args.harmony_input
@@ -74,14 +80,14 @@ def main():
     mfile.write(message)
     mfile.write('\n')
     mfile.close()
-
+    logging.info('%message', message)
 
     sources = args.harmony_sources
     sfile = open("sources","w")
     sfile.write(sources)
     sfile.write('\n')
     sfile.close()
-
+    logging.info('%sources', sources)
 
     if (harmony.is_harmony_cli(args)):
         harmony.run_cli(parser, args, ExampleAdapter)
